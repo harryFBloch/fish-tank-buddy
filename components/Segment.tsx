@@ -1,16 +1,16 @@
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View, Animated } from 'react-native';
-import { TankShapes } from '../store/types';
 
 interface Props {
   selectedIndex: number;
   callback: (newIndex: number) => void;
+  buttons: {[index: number]: string};
 }
 
-export const Segment = ({selectedIndex, callback}: Props): ReactElement => {
+export const Segment = ({selectedIndex, callback, buttons}: Props): ReactElement => {
 
   const [animatedValues, setAnimatedValues] = useState(
-    Object.values(TankShapes).map(() => {
+    Object.values(buttons).map(() => {
       return {x: useRef(new Animated.Value(1)).current, y: useRef(new Animated.Value(1)).current}
     })
   );
@@ -40,19 +40,18 @@ export const Segment = ({selectedIndex, callback}: Props): ReactElement => {
 
   return (
     <View style={styles.container}>
-      {Object.values(TankShapes).map((shape) => 
-        <Animated.View style={[styles.segment, selectedIndex === shape.index ? styles.selected : styles.blank, {transform: [{ scaleX: animatedValues[shape.index].x}, {scaleY: animatedValues[shape.index].y}]}]} 
-          key={shape.index + shape.name} 
-          onTouchStart={() => handleSegmentPress(shape.index)}>
+      {Object.keys(buttons).map((buttonIndex) => 
+        <Animated.View style={[styles.segment, selectedIndex === Number(buttonIndex) ? styles.selected : styles.blank, {transform: [{ scaleX: animatedValues[Number(buttonIndex)].x}, {scaleY: animatedValues[Number(buttonIndex)].y}]}]} 
+          key={buttonIndex + buttons[Number(buttonIndex)]} 
+          onTouchStart={() => handleSegmentPress(Number(buttonIndex))}>
 
-          <Text style={selectedIndex === shape.index ? styles.selectedLabel : styles.label}>{shape.name}</Text>
+          <Text style={selectedIndex === Number(buttonIndex) ? styles.selectedLabel : styles.label}>{buttons[Number(buttonIndex)]}</Text>
         </Animated.View>
       )}
 
     </View>
   )
 }
-
 
 const styles = StyleSheet.create({
   container: {
