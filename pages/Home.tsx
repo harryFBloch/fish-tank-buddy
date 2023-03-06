@@ -1,8 +1,10 @@
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View, Animated, ScrollView } from 'react-native';
 import { Button, Card, Image, Input } from '@rneui/themed';
+import FloatingLabel from '../components/FloatingLabel';
 import { Segment } from '../components/Segment';
 import { Results, ResultsTemplate, TankShapes } from '../store/types';
+import { Switch } from '@rneui/base';
 
 export const Home = (): ReactElement => {
 
@@ -12,9 +14,16 @@ export const Home = (): ReactElement => {
   const [height, setHeight] = useState(0);
   const [diameter, setDiameter] = useState(0);
   const [depth, setDepth] = useState(0);
+  const [sides, setSides] = useState(0);
+
+  const [imperial, setImperial] = useState(true);
   const selectedShape = Object.values(TankShapes)[tabIndex];
   const [results, setResults] = useState(ResultsTemplate);
+
+
   const imageAnimation = useRef(new Animated.Value(1)).current
+  const unitAnimation = useRef(new Animated.Value(1)).current
+  const [unitLabelImperial, setUnitLabelImperial] = useState(true);
 
   const renderTankShape = (): ReactElement => {
     return (
@@ -35,6 +44,22 @@ export const Home = (): ReactElement => {
     }).start();
   }, [tabIndex])
 
+  const handleSwitchUnit = () => {
+    setImperial(!imperial);
+      Animated.timing(unitAnimation, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: false,
+      }).start(() => {
+        setUnitLabelImperial(!unitLabelImperial)
+        Animated.timing(unitAnimation, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: false,
+        }).start();
+      })
+  }
+
   const handleSelectShapeCallback = (index: number) => {
       Animated.timing(imageAnimation, {
         toValue: 0,
@@ -43,10 +68,18 @@ export const Home = (): ReactElement => {
         
       }).start(() => {
         setTabIndex(index);
+        resetInputs();
       })
   }
+
+  const calculateMultiSideVolume = (): { volume: number, surfaceArea: number } => {
+    const baseArea = (sides * width * height) / 2;
+    const lateralArea = sides * width * height;
+    const surfaceArea = 2 * baseArea + lateralArea;
+    const volume = baseArea * height;
+    return { volume, surfaceArea };
+  }
   
-  console.log({tabIndex, depth, width, height})
   const calculateResults = (): Results => {
     switch (tabIndex){
       case 0:
@@ -56,7 +89,7 @@ export const Home = (): ReactElement => {
         return {volume: Math.PI * Math.pow(diameter/2, 2) * height,
         surfaceArea: Math.pow(2 * Math.PI * (diameter/2), 2) + 2 * Math.PI * (diameter/2) * height}
       case 2:
-        return ResultsTemplate
+        return calculateMultiSideVolume()
       default:
         return ResultsTemplate
     }
@@ -66,6 +99,7 @@ export const Home = (): ReactElement => {
     console.log(calculateResults())
     setResults({...calculateResults()});
     setShowResults(true);
+    resetInputs();
   }
 
   const renderResultsCard = () =>{
@@ -75,7 +109,7 @@ export const Home = (): ReactElement => {
         <Card.Divider/>
         <View>
           <Text>Water Volume: {results.volume}</Text>
-          <Text>Water Surface Area: {results.volume}</Text>
+          <Text>Water Surface Area: {results.surfaceArea}</Text>
         </View>
         <Button onPress={() => setShowResults(false)}>Back</Button>
       </Card>
@@ -85,10 +119,20 @@ export const Home = (): ReactElement => {
   const renderRectangleInputs = (): ReactElement => {
     return (
       <View>
-        <Input value={height !== 0 ? String(height) : ""} placeholder="Height" keyboardType="number-pad" onChangeText={(e) => {setHeight(Number(e))}}/>
-        <Input value={width !== 0 ? String(width) : ""} placeholder="Width" keyboardType="number-pad" onChangeText={(e) => setWidth(Number(e))}/>
-        <Input value={depth !== 0 ? String(depth) : ""} placeholder="Depth" keyboardType="number-pad" onChangeText={(e) => setDepth(Number(e))}/>
-        <Button onPress={handleCalculateButton}>Calculate</Button>
+        <View style={styles.switchContainer}>
+          <Animated.Text style={{...styles.switchLabel, opacity: unitAnimation, 
+            letterSpacing: unitAnimation.interpolate({
+              inputRange: [0, 1],
+              outputRange: [-2, 0.5],
+            })}}>
+            {unitLabelImperial ? 'Imperial (in)' : 'Metric (cm)'}
+          </Animated.Text>
+          <Switch value={imperial} onValueChange={handleSwitchUnit}/>
+        </View>
+        <FloatingLabel value={height !== 0 ? String(height) : ""} label="Height" onChangeText={(e) => {setHeight(Number(e))}}/>
+        <FloatingLabel value={width !== 0 ? String(width) : ""} label="Width" onChangeText={(e) => setWidth(Number(e))}/>
+        <FloatingLabel value={depth !== 0 ? String(depth) : ""} label="Depth" onChangeText={(e) => setDepth(Number(e))}/>
+        <Button style={styles.button} onPress={handleCalculateButton}>Calculate</Button>
       </View>
     )
   }
@@ -96,12 +140,30 @@ export const Home = (): ReactElement => {
   const renderCylinderInputs = (): ReactElement => {
     return (
       <View>
-        <Input value={height !== 0 ? String(height) : ""} placeholder="Height" keyboardType="number-pad" onChangeText={(e) => {setHeight(Number(e))}}/>
-        <Input value={diameter !== 0 ? String(diameter) : ""} placeholder="Diameter" keyboardType="number-pad" onChangeText={(e) => setDiameter(Number(e))}/>
-        <Input value={depth !== 0 ? String(depth) : ""} placeholder="Depth" keyboardType="number-pad" onChangeText={(e) => setDepth(Number(e))}/>
-        <Button onPress={handleCalculateButton}>Calculate</Button>
+        <FloatingLabel value={height !== 0 ? String(height) : ""} label="Height" onChangeText={(e) => {setHeight(Number(e))}}/>
+        <FloatingLabel value={diameter !== 0 ? String(diameter) : ""} label="Diameter" onChangeText={(e) => setDiameter(Number(e))}/>
+        <FloatingLabel value={depth !== 0 ? String(depth) : ""} label="Depth" onChangeText={(e) => setDepth(Number(e))}/>
+        <Button style={styles.button} onPress={handleCalculateButton}>Calculate</Button>
       </View>
     )
+  }
+
+  const renderMultiInputs = (): ReactElement => {
+    return (
+      <View>
+        <FloatingLabel value={sides !== 0 ? String(sides) : ""} label="Number of Sides" onChangeText={(e) => setSides(Number(e))}/>
+        <FloatingLabel value={width !== 0 ? String(width) : ""} label="Width" onChangeText={(e) => setWidth(Number(e))}/>
+        <FloatingLabel value={height !== 0 ? String(height) : ""} label="Height" onChangeText={(e) => {setHeight(Number(e))}}/>
+        <Button style={styles.button} onPress={handleCalculateButton}>Calculate</Button>
+      </View>
+    )
+  }
+
+  const resetInputs = () => {
+    setDepth(0);
+    setHeight(0);
+    setWidth(0);
+    setDiameter(0);
   }
 
   const renderInputs = ():ReactElement => {
@@ -111,7 +173,7 @@ export const Home = (): ReactElement => {
       case 1:
         return renderCylinderInputs();
       case 2:
-        return <></>
+        return renderMultiInputs();
       default:
         return <></>
     }
@@ -147,4 +209,16 @@ const styles = StyleSheet.create({
     height: 150,
     width: 150,
   },
+  button: {
+    marginTop: 16,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  switchLabel: {
+    fontWeight: 'bold',
+    marginRight: 16,
+  }
 });
