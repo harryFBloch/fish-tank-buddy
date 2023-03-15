@@ -1,5 +1,6 @@
+import { Button } from '@rneui/themed';
 import { ReactElement, useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View, Animated } from 'react-native';
+import { StyleSheet, Text, View, Animated, TouchableOpacity } from 'react-native';
 
 interface Props {
   selectedIndex: number;
@@ -44,11 +45,9 @@ export const Segment = ({selectedIndex, callback, buttons}: Props): ReactElement
         <Animated.View style={[styles.segment, selectedIndex === Number(buttonIndex) ? styles.selected : styles.blank, {transform: [{ scaleX: animatedValues[Number(buttonIndex)].x}, {scaleY: animatedValues[Number(buttonIndex)].y}]}]} 
           key={buttonIndex + buttons[Number(buttonIndex)]} 
           onTouchStart={() => handleSegmentPress(Number(buttonIndex))}>
-
           <Text style={selectedIndex === Number(buttonIndex) ? styles.selectedLabel : styles.label}>{buttons[Number(buttonIndex)]}</Text>
         </Animated.View>
       )}
-
     </View>
   )
 }
@@ -58,11 +57,12 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     flexDirection: 'row',
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
+    width: '100%',
   },
   segment: {
-    padding: 16,
-    margin: 8,
+    padding: 8,
+    margin: 0,
     borderStyle: 'solid',
     borderWidth: 3,
     borderColor: 'black',
@@ -81,5 +81,5 @@ const styles = StyleSheet.create({
   },
   blank: {
 
-  }
+  },
 });

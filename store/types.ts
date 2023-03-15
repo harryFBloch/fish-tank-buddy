@@ -1,31 +1,23 @@
-import { ImageSourcePropType } from "react-native"
+import { ThunkAction, ThunkDispatch } from 'redux-thunk';
+import { RootState, RootAction } from '.';
+import { AnyAction } from 'redux';
 
-export type TankShapesType = {
-  rectangle: TankShapeType,
-  cylindrical: TankShapeType,
-  multiSide: TankShapeType,
+// Remove when https://github.com/reduxjs/redux-thunk/pull/224 is released.
+declare module "redux" {
+  function bindActionCreators<M extends ActionCreatorsMapObject<any>>(
+    actionCreators: M,
+    dispatch: Dispatch
+  ): {
+    [N in keyof M]: ReturnType<M[N]> extends ThunkAction<any, any, any, any>
+      ? (...args: Parameters<M[N]>) => ReturnType<ReturnType<M[N]>>
+      : M[N]
+  };
 }
 
-export type TankShapeType = {
-  index: number,
-  formula: string,
-  name: string,
-  image: ImageSourcePropType,
-}
+export type ThunkResult<R> = ThunkAction<R, RootState, null, RootAction>;
+export type ThunkDispatchType = ThunkDispatch<RootState, null, AnyAction>;
 
-export type Results = {
-  volume: number,
-  surfaceArea: number,
-
-}
-
-export const ResultsTemplate: Results = {
-  volume: 0,
-  surfaceArea: 0,
-}
-
-export const TankShapes: TankShapesType = {
-  rectangle: {index: 1, name: 'Rectangle', formula: '', image: require('../assets/images/rectangle.png')},
-  cylindrical: {index: 0, name: 'Cylindrical', formula: '', image: require('../assets/images/cylindar.png')},
-  multiSide: {index: 2, name: 'Multi Side', formula: '', image: require('../assets/images/multiSide.png')},
+export interface FetchReturn {
+  status: number | null;
+  data: any;
 }
