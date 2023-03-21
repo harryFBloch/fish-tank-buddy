@@ -37,6 +37,15 @@
         {
           "userTrackingPermission": "This identifier will be used to deliver personalized ads to you."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/fishIconx96.png",
+          "color": "#ffffff",
+          "sounds": ["./assets/notif.wav", "./assets/notif.wav"],
+          "mode": "production"
+        }
       ]
     ],
     "extra": {

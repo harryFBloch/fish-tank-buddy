@@ -35,7 +35,7 @@ export const FloatingLabel = ({ label, value, onChangeText }: Props): ReactEleme
     }),
     color: animatedIsFocused.interpolate({
       inputRange: [0, 1],
-      outputRange: ["#aaa", "#000"],
+      outputRange: ["#aaa", "#616B76"],
     }),
   };
 
@@ -53,7 +53,7 @@ export const FloatingLabel = ({ label, value, onChangeText }: Props): ReactEleme
     <TextInput
       value={value}
       onChangeText={onChangeText}
-      style={{ height: 26, fontSize: 20, color: "#000", borderBottomWidth: 1, borderBottomColor: "#555" }}
+      style={{ height: 26, fontSize: 20, borderBottomWidth: 1, borderBottomColor: "#555", color: 'white'}}
       onFocus={handleFocus}
       onBlur={handleBlur}
       keyboardType="numeric"

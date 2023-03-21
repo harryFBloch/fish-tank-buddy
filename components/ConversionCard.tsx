@@ -61,7 +61,7 @@ export const ConversionCard = ({showInter}: Props): ReactElement => {
   }
 
   const renderConversionInputs = (): ReactElement => (
-    <Card>
+    <Card containerStyle={styles.transparent}>
       <Card.Title style={styles.resultsTitle} >Volume Conversion</Card.Title>
       <Segment selectedIndex={selectedIndex} callback={handleSegmentPress} buttons={{
             0: "Carbonate Hardness",
@@ -75,6 +75,7 @@ export const ConversionCard = ({showInter}: Props): ReactElement => {
           <Picker
             selectedValue={selectedUnit}
             onValueChange={(e) => setSelectedUnit(e)}
+            itemStyle={styles.whiteFont}
           >
 
             <Picker.Item label="drops" value="drops"/>
@@ -97,7 +98,7 @@ export const ConversionCard = ({showInter}: Props): ReactElement => {
   )
 
   const renderConversionResults = (volumeConversions: VolumeConversion): ReactElement => (
-    <Card>
+    <Card containerStyle={styles.transparent}>
       <Card.Title style={styles.resultsTitle} >Volume Conversion Results</Card.Title>
       <View>
         <Text style={styles.resultsText}>drops: {volumeConversions.drops}</Text>
@@ -119,7 +120,7 @@ export const ConversionCard = ({showInter}: Props): ReactElement => {
 
   const renderHardness = (): ReactElement => {
     return (
-      <Card>
+      <Card containerStyle={styles.transparent}>
         <Card.Title style={styles.resultsTitle} >Bicarbonate Hardness</Card.Title>
         <Segment selectedIndex={selectedIndex} callback={handleSegmentPress} buttons={{
           0: "Carbonate Hardness",
@@ -133,6 +134,7 @@ export const ConversionCard = ({showInter}: Props): ReactElement => {
             <Picker
               selectedValue={selectedUnit}
               onValueChange={(e) => setSelectedUnit(e)}
+              itemStyle={styles.whiteFont}
             >
               <Picker.Item label="ppm" value="ppm"/>
               <Picker.Item label="dKH" value="dKH"/>
@@ -146,7 +148,7 @@ export const ConversionCard = ({showInter}: Props): ReactElement => {
   }
 
   const renderHardnessResults = (results: BiCarbResultsData): ReactElement => (
-    <Card>
+    <Card containerStyle={styles.transparent}>
       <Card.Title style={styles.resultsTitle} >Bicarbonate Hardness Results</Card.Title>
       <View style={styles.resultsContainer}>
         <Text style={styles.resultsText}>dKH: {results.dKH}</Text>
@@ -189,7 +191,6 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     flexDirection: 'row',
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
@@ -203,6 +204,7 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 5,
+    color: 'white',
   },
   resultsContainer: {
     padding: 8,
@@ -211,5 +213,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 4,
     fontSize: 18,
+  },
+  glass: {
+    backgroundColor: 'rgba(17, 25, 40, 0.35)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.125)',
+  },
+  card: {
+    backgroundColor: 'transparent',
+    borderColor: 'transparent',
+  },
+  lightFont: {
+    color: '#616B76',
+  },
+  whiteFont: {
+    color: 'white',
+  },
+  transparent: {
+    backgroundColor: 'transparent',
+    borderColor: 'transparent',
   }
 });

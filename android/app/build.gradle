@@ -113,7 +113,7 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace 'com.hfb.fishTankCalculator'
+    namespace 'com.hfb.fishTankBuddy'
     defaultConfig {
         applicationId 'com.hfb.fishTankBuddy'
         minSdkVersion rootProject.ext.minSdkVersion

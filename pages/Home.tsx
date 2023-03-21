@@ -1,12 +1,17 @@
 import { ReactElement, useRef, useState } from 'react';
-import { Animated, StyleSheet, View, Dimensions} from 'react-native';
+import { Animated, StyleSheet, View, Dimensions, ImageBackground} from 'react-native';
 import { Tab, Text, TabView, Icon } from '@rneui/themed';
 import VolumeCalc from '../components/VolumeCalc';
 import ConversionCard from '../components/ConversionCard';
 import AdMobBannerComponent from '../components/AdmobBanner';
+import NotificationsCard from '../components/NotificationsCard';
+
+const images = [require('../assets/images/fishTank1.png'), require('../assets/images/fishTank2.png'), require('../assets/images/fishTank3.png')]
 
 export const Home = (): ReactElement => {
   const [index, setIndex] = useState("0");
+  const [animating, setAnimating] = useState(false);
+  const animation = useRef(new Animated.Value(1)).current;
   const tabAnimations = {
     "0": {ref: useRef(new Animated.Value(1)).current},
     "1": {ref: useRef(new Animated.Value(0)).current},
@@ -14,13 +19,14 @@ export const Home = (): ReactElement => {
   }
 
   const handleTabSwitched = (newIndex: string) => {
-    if(newIndex !== index) {   
+    if(newIndex !== index && !animating) {  
+      handleChange(newIndex);
+      setAnimating(true); 
       Animated.timing(tabAnimations[index as keyof typeof tabAnimations].ref,{
         toValue: 0,
         duration: 300,
         useNativeDriver: false,
       }).start(() => {
-        setIndex(newIndex)
         Animated.timing(tabAnimations[newIndex as keyof typeof tabAnimations].ref,{
           toValue: 1,
           duration: 300,
@@ -30,11 +36,50 @@ export const Home = (): ReactElement => {
     }
   }
 
+  const handleChange = (newIndex: string) => {
+    Animated.timing(animation, {
+      toValue: 0,
+      duration: 1100,
+      useNativeDriver: false,
+    }).start(() => {
+      setIndex(newIndex)
+      Animated.timing(animation, {
+        toValue: 1,
+        duration: 1100,
+        useNativeDriver: false,
+      }).start(() => {
+        setAnimating(false);
+      });
+    })
+  };
+
+  const translateY = animation.interpolate({
+    inputRange: [0, 0.38, 0.55, 0.72, 0.81, 0.9, 0.95, 1],
+    outputRange: [500, 0, 65, 0, 28, 0, 8, 0],
+  });
+
+  const opacity = animation.interpolate({
+    inputRange: [0, 0.38],
+    outputRange: [0, 1],
+  });
+
+  const imageFade = animation.interpolate({
+    inputRange: [0,0.1, 1],
+    outputRange: [0,0, 1],
+  });
+
   return (
     <>
-      <AdMobBannerComponent/>
-      {Number(index) === 0 && <VolumeCalc />}
-      {Number(index) === 1 && <ConversionCard />}
+      <Animated.View style={{...styles.imageContainer, opacity: imageFade}}>
+        <ImageBackground source={images[Number(index)]} style={styles.imageContainer}>
+          <AdMobBannerComponent/>
+          <Animated.View style={{transform: [{translateY}], opacity, padding: 16}}>
+            {Number(index) === 0 && <VolumeCalc />}
+            {Number(index) === 1 && <ConversionCard />}
+            {Number(index) === 2 && <NotificationsCard />}
+          </Animated.View>
+        </ImageBackground>
+      </Animated.View>
       
       <View style={styles.tabBarContainer}>
         {Object.keys(tabAnimations).map((key) => 
@@ -61,6 +106,16 @@ export const Home = (): ReactElement => {
 export default Home;
 
 const styles = StyleSheet.create({
+  imageContainer: {
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    resizeMode: 'cover',
+  },
   container: {
     backgroundColor: '#fff',
     alignItems: 'center',

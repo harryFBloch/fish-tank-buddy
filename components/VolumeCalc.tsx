@@ -1,12 +1,28 @@
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View, Animated, ScrollView } from 'react-native';
 import { Button, Card, Image, Input } from '@rneui/themed';
+import {BlurView} from '@react-native-community/blur';
 import FloatingLabel from '../components/FloatingLabel';
 import { Segment } from '../components/Segment';
 import { Results, ResultsTemplate, TankShapes } from '../store/MiscTypes';
 import { Switch } from '@rneui/base';
+import { actions } from '../store';
+import { ThunkDispatchType } from '../store/types';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
-export const VolumeCalc = (): ReactElement => {
+// Need to define types here because it won't infer properly from ThunkResult right now
+interface ReduxDispatchProps {
+  showInter: () => Promise<void>
+}
+
+const mapDispatchToProps = (dispatch: ThunkDispatchType): ReduxDispatchProps => bindActionCreators({
+  showInter: actions.ads.showInter
+}, dispatch);
+
+type Props = ReturnType<typeof mapDispatchToProps>
+
+export const VolumeCalc = ({ showInter }: Props): ReactElement => {
 
   const [showResults, setShowResults] = useState(false)
   const [tabIndex, setTabIndex] = useState(0);
@@ -105,9 +121,12 @@ export const VolumeCalc = (): ReactElement => {
   }
 
   const handleCalculateButton = () => {
-    setResults({...calculateResults()});
-    setShowResults(true);
-    resetInputs();
+    showInter()
+    .then(() => {
+      setResults({...calculateResults()});
+      setShowResults(true);
+      resetInputs();
+    })
   }
 
   const convertResults = (): {volume: number, surfaceArea: number} => {
@@ -205,8 +224,9 @@ export const VolumeCalc = (): ReactElement => {
   }
 
   return (
-      <Card >
-        <Card.Title>Fish Tank Calculator</Card.Title>
+      <BlurView style={styles.glass} blurType="dark" blurAmount={10}>
+        <Card containerStyle={styles.card}>
+        <Card.Title style={styles.whiteFont}>Fish Tank Calculator</Card.Title>
         <Card.Divider/>
         <Segment selectedIndex={tabIndex} callback={handleSelectShapeCallback} buttons={{
           0: 'Rectangle',
@@ -216,15 +236,16 @@ export const VolumeCalc = (): ReactElement => {
         {renderTankShape()}
         {!showResults && renderInputs()}
         {showResults && renderResultsCard()}
-      </Card>
+        </Card>
+      </BlurView>
   )
 }
 
-export default VolumeCalc;
+export default connect(null,mapDispatchToProps)(VolumeCalc);
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 8,
@@ -245,5 +266,23 @@ const styles = StyleSheet.create({
   switchLabel: {
     fontWeight: 'bold',
     marginRight: 16,
+    color: 'white',
+  },
+  glass: {
+    backgroundColor: 'rgba(17, 25, 40, 0.35)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.125)',
+  },
+  card: {
+    backgroundColor: 'transparent',
+    borderColor: 'transparent',
+  },
+  lightFont: {
+    color: '#616B76',
+  },
+  whiteFont: {
+    color: 'white',
   }
+
 });

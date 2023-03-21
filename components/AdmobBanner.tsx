@@ -19,14 +19,12 @@ export const AdMobBannerComponent = (): ReactElement => {
     .catch((e) => console.log({AdmobInitError: e}))
   },[])
   return (
-    <SafeAreaView style={{ position: 'absolute', top: 16}}>
+    <SafeAreaView style={{ position: 'absolute', top: 0}}>
       <BannerAd unitId={TestIds.BANNER} size={BannerAdSize.BANNER}
         requestOptions={{requestNonPersonalizedAdsOnly: !trackingStatus}}
       />
     </SafeAreaView>
   )
 }
-//write a function returning two days from now
 
 export default AdMobBannerComponent
-

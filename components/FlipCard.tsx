@@ -1,5 +1,7 @@
 import React, { useState, useEffect, ReactNode } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import {BlurView} from '@react-native-community/blur';
+
 
 type InheritedProps = {
   frontCard: ReactNode,
@@ -14,7 +16,7 @@ const FlipCard = ({ frontCard, backCard, flip }: InheritedProps) => {
     Animated.timing(animation, {
       toValue: flip ? 180 : 0,
       duration: 1000,
-      useNativeDriver: true
+      useNativeDriver: false
     }).start(); 
   }, [flip]);
 
@@ -50,15 +52,19 @@ const FlipCard = ({ frontCard, backCard, flip }: InheritedProps) => {
 
   return (
     <View style={styles.container}>
-      <View>
-        <Animated.View style={[styles.card, frontAnimatedStyle]}>
-          {frontCard}
-        </Animated.View>
-        <Animated.View style={[styles.card, styles.backCard, backAnimatedStyle]}>
-          {backCard}
-        </Animated.View>
+        <View>
+          <Animated.View style={[styles.card, frontAnimatedStyle]}>
+            <BlurView style={styles.glass} blurType="dark" blurAmount={10}>
+            {frontCard}
+            </BlurView>
+          </Animated.View>
+          <Animated.View style={[styles.card, styles.backCard, backAnimatedStyle]}>
+          <BlurView style={styles.glass} blurType="dark" blurAmount={10}>
+            {backCard}
+          </BlurView>
+          </Animated.View>
+        </View>
       </View>
-    </View>
   );
 };
 
@@ -67,6 +73,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
     height: '100%',
+    backgroundColor: 'transparent',
   },
   card: {
     backfaceVisibility: 'hidden',
@@ -75,6 +82,8 @@ const styles = StyleSheet.create({
     zIndex: 10,
     elevation: 10,
     top: '30%',
+    backgroundColor: 'transparent',
+    borderColor: 'transparent',
   },
   backCard: {
     transform: [{ rotateY: '180deg' }],
@@ -91,6 +100,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     padding: 16,
     zIndex: 1
+  },
+  glass: {
+    backgroundColor: 'rgba(17, 25, 40, 0.35)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.125)',
+  },
+  lightFont: {
+    color: '#616B76',
+  },
+  whiteFont: {
+    color: 'white',
   }
 });
 
