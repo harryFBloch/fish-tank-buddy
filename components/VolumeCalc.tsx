@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   glass: {
-    backgroundColor: 'rgba(17, 25, 40, 0.35)',
+    backgroundColor: 'rgba(17, 25, 40, 0.1)',
     borderRadius: 12,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.125)',

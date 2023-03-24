@@ -1,5 +1,5 @@
 import { ReactElement, useRef, useState } from 'react';
-import { Animated, StyleSheet, View, Dimensions, ImageBackground} from 'react-native';
+import { Animated, StyleSheet, View, Dimensions, ImageBackground, Image} from 'react-native';
 import { Tab, Text, TabView, Icon } from '@rneui/themed';
 import VolumeCalc from '../components/VolumeCalc';
 import ConversionCard from '../components/ConversionCard';
@@ -13,9 +13,9 @@ export const Home = (): ReactElement => {
   const [animating, setAnimating] = useState(false);
   const animation = useRef(new Animated.Value(1)).current;
   const tabAnimations = {
-    "0": {ref: useRef(new Animated.Value(1)).current},
-    "1": {ref: useRef(new Animated.Value(0)).current},
-    "2": {ref: useRef(new Animated.Value(0)).current}
+    "0": {ref: useRef(new Animated.Value(1)).current, tabName: "Volume", tabIcon: require('../assets/icons/fish.png')},
+    "1": {ref: useRef(new Animated.Value(0)).current, tabName: "Conversions", tabIcon: require('../assets/icons/water-tester.png')},
+    "2": {ref: useRef(new Animated.Value(0)).current, tabName: "Reminders", tabIcon: require('../assets/icons/digital-clock.png')}
   }
 
   const handleTabSwitched = (newIndex: string) => {
@@ -67,6 +67,7 @@ export const Home = (): ReactElement => {
     inputRange: [0,0.1, 1],
     outputRange: [0,0, 1],
   });
+  
 
   return (
     <>
@@ -86,16 +87,27 @@ export const Home = (): ReactElement => {
           <Animated.View style={{...styles.tab,
             backgroundColor: tabAnimations[key as keyof typeof tabAnimations].ref.interpolate({
               inputRange: [0, 1],
-              outputRange: ['grey', 'blue'],
+              outputRange: ['rgba(17, 25, 40, 0.5)', '#616B76']
             }),
             transform: [{scale: tabAnimations[key as keyof typeof tabAnimations].ref.interpolate({
               inputRange: [0, 1],
               outputRange: [1.2, 1],
-            })}]}}
+            }),
+          }]}}
             key={key}
             onTouchStart={() => handleTabSwitched(key)}>
-            <Icon name="home"/>
-            <Text style={styles.tabLabel}>Volume</Text>
+            <Animated.View style={{...styles.iconContainer, transform: [{translateY: tabAnimations[key as keyof typeof tabAnimations].ref.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, -28],
+            })}]}}>
+              <Image style={styles.icon} source={tabAnimations[key as keyof typeof tabAnimations].tabIcon}/>
+            <Animated.Text style={{...styles.tabLabel, color: tabAnimations[key as keyof typeof tabAnimations].ref.interpolate({
+              inputRange: [0, 1],
+              outputRange: ['black', 'white']
+            })}}>
+              {tabAnimations[key as keyof typeof tabAnimations].tabName}
+            </Animated.Text>
+            </Animated.View>
           </Animated.View>
         )}
       </View>
@@ -115,6 +127,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     resizeMode: 'cover',
+    backgroundColor: 'rgba(17, 25, 40, 0.5)',
   },
   container: {
     backgroundColor: '#fff',
@@ -129,7 +142,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'space-between',
     width: Dimensions.get('window').width,
-    backgroundColor: 'blue',
+    backgroundColor: 'rgba(17, 25, 40, 0.5)',
   },
   tab: {
     padding: 8,
@@ -139,5 +152,15 @@ const styles = StyleSheet.create({
   }, 
   tabLabel: {
     textAlign: 'center',
-  }
+  },
+  icon: {
+    width: 40,
+    height: 40,
+  },
+  iconContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  
 });

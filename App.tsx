@@ -32,7 +32,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: 'blue',
+    backgroundColor: 'rgba(17, 25, 40, 0.5)',
     alignItems: 'center',
     justifyContent: 'center',
   },

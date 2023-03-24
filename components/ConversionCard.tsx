@@ -77,7 +77,6 @@ export const ConversionCard = ({showInter}: Props): ReactElement => {
             onValueChange={(e) => setSelectedUnit(e)}
             itemStyle={styles.whiteFont}
           >
-
             <Picker.Item label="drops" value="drops"/>
             <Picker.Item label="fluid Oz" value="fluidOz"/>
             <Picker.Item label="liter" value="liter"/>

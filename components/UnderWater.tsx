@@ -81,7 +81,7 @@ export const UnderWater = (): ReactElement => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'blue',
+    backgroundColor: 'rgba(17, 25, 40, 0.5)',
     position: 'absolute',
     width: '100%',
     height: '100%',
