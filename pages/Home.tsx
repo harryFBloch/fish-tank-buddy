@@ -1,10 +1,11 @@
-import { ReactElement, useRef, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, View, Dimensions, ImageBackground, Image} from 'react-native';
 import { Tab, Text, TabView, Icon } from '@rneui/themed';
 import VolumeCalc from '../components/VolumeCalc';
 import ConversionCard from '../components/ConversionCard';
 import AdMobBannerComponent from '../components/AdmobBanner';
 import NotificationsCard from '../components/NotificationsCard';
+import store, { actions } from '../store';
 
 const images = [require('../assets/images/fishTank1.png'), require('../assets/images/fishTank2.png'), require('../assets/images/fishTank3.png')]
 
@@ -17,6 +18,10 @@ export const Home = (): ReactElement => {
     "1": {ref: useRef(new Animated.Value(0)).current, tabName: "Conversions", tabIcon: require('../assets/icons/water-tester.png')},
     "2": {ref: useRef(new Animated.Value(0)).current, tabName: "Reminders", tabIcon: require('../assets/icons/digital-clock.png')}
   }
+
+  useEffect(() => {
+    actions.notifications.getNotifications()(store.dispatch, store.getState, null);
+  }, [])
 
   const handleTabSwitched = (newIndex: string) => {
     if(newIndex !== index && !animating) {  
@@ -103,7 +108,7 @@ export const Home = (): ReactElement => {
               <Image style={styles.icon} source={tabAnimations[key as keyof typeof tabAnimations].tabIcon}/>
             <Animated.Text style={{...styles.tabLabel, color: tabAnimations[key as keyof typeof tabAnimations].ref.interpolate({
               inputRange: [0, 1],
-              outputRange: ['black', 'white']
+              outputRange: ['#616B76', 'white']
             })}}>
               {tabAnimations[key as keyof typeof tabAnimations].tabName}
             </Animated.Text>

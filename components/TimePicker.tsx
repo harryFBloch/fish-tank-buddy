@@ -1,17 +1,28 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import { Button, Switch } from '@rneui/themed';
+import { Notif } from '../store';
 
 type Props = {
-  callback: (day: number, hour: number, minute: number) => void
+  callback: (days: number, hours: number, minutes: number, am: boolean, enabled: boolean) => void;
+  notif: Notif
 }
 
-const TimePicker = ({ callback }: Props) => {
-  const [days, setDays] = useState(1);
-  const [selectedHour, setSelectedHour] = useState<number>();
-  const [selectedMinute, setSelectedMinute] = useState<number>();
-  const [am, setAm] = useState(true);
+const TimePicker = ({ callback, notif }: Props) => {
+  const [days, setDays] = useState(notif.days);
+  const [selectedHour, setSelectedHour] = useState<number>(notif.hours);
+  const [selectedMinute, setSelectedMinute] = useState<number>(notif.minutes);
+  const [am, setAm] = useState(notif.am);
+  const [enabled, setEnabled] = useState(notif.enabled);
+
+  useEffect(() => {
+    setEnabled(notif.enabled);
+    setDays(notif.days);
+    setSelectedHour(notif.hours);
+    setSelectedMinute(notif.minutes);
+    setAm(notif.am);
+  }, [notif])
 
   const handleHourPress = (hour: number) => {
     console.log({hour})
@@ -53,6 +64,12 @@ const TimePicker = ({ callback }: Props) => {
   return (
     <View>
       <View style={styles.amContainer}>
+        <Text style={styles.amLabel}>{enabled === true ? 'Disable' : 'Enable'}:</Text>
+        <Switch value={enabled} onChange={() => setEnabled(!enabled)}/>
+      </View>
+      {enabled === true &&
+      <>
+      <View style={styles.amContainer}>
         <Text style={styles.amLabel}>{am === true ? 'AM' : 'PM'}:</Text>
         <Switch value={am} onChange={() => setAm(!am)}/>
       </View>
@@ -63,7 +80,7 @@ const TimePicker = ({ callback }: Props) => {
           <Picker style={styles.picker} selectedValue={days} onValueChange={(e) => setDays(Number(e))} itemStyle={styles.pickerItem}>
             {renderPickerDays()}
           </Picker>
-          <Text style={styles.whiteText}>Days</Text>
+          <Text style={{...styles.whiteText, marginRight: 8}}>Days.</Text>
         </View>
 
         <View style={styles.rowContainer}>
@@ -77,8 +94,9 @@ const TimePicker = ({ callback }: Props) => {
           </Picker>
         </View>
       </View>
-
-      <Button onPress={() => callback(days, Number(selectedHour), Number(selectedMinute))}>Set Notificatiion</Button>
+      <Button onPress={() => callback(days, Number(selectedHour), Number(selectedMinute), am, enabled)}>Set Notification</Button>
+      </>
+      }
     </View>
   );
 };

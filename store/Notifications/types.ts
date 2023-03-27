@@ -13,15 +13,17 @@ export type Notif = {
   hours: number;
   minutes: number;
   enabled: boolean;
+  am: boolean;
 }
 
 export const NotfTemplate = {
   ids: [],
   message: '',
-  days: 0,
+  days: 1,
   hours: 0,
   minutes: 0,
   enabled: false,
+  am: false,
 }
 
 export const NotificationsTemplate: NotificationsData = {

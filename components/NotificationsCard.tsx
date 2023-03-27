@@ -20,7 +20,7 @@ const mapStateToProps = (state: RootState): ReduxStateProps => ({
 
 // Need to define types here because it won't infer properly from ThunkResult right now
 interface ReduxDispatchProps {
-  saveNotifications: (key: keyof NotificationsData, days: number, hour: number, minute: number) => Promise<void>
+  saveNotifications: (key: keyof NotificationsData, days: number, hour: number, minute: number, am: boolean, enabled: boolean) => Promise<void>
 }
 
 const mapDispatchToProps = (dispatch: ThunkDispatchType): ReduxDispatchProps => bindActionCreators({
@@ -46,10 +46,13 @@ export const NotificationsCard = ({ notifications, saveNotifications}: Props): R
     setSelectedIndex(newIndex);
   }
 
-  const handleSendNotification = (days: number, hours: number, minutes: number) => {
-   saveNotifications( NotifiacationsDataKeys[selectedIndex] as keyof NotificationsData,days, hours, minutes);
+  const handleSendNotification = (days: number, hours: number, minutes: number, am: boolean, enabled: boolean) => {
+    //key: keyof NotificationsData, days: number, hour: number, minute: number, am: boolean, enabled: boolean
+   saveNotifications( NotifiacationsDataKeys[selectedIndex] as keyof NotificationsData,days, hours, minutes, am, enabled);
   }
 
+  const notif = notifications[NotifiacationsDataKeys[selectedIndex] as keyof NotificationsData];
+  
   return (
     <BlurView style={styles.glass} blurType="dark" blurAmount={10}>
       <Card containerStyle={styles.container}>
@@ -58,7 +61,7 @@ export const NotificationsCard = ({ notifications, saveNotifications}: Props): R
           "Feed", "Clean", "Carbonate"
         ]}/>
         <View style={styles.pickerContainer}>
-          <TimePicker callback={handleSendNotification}/>
+          <TimePicker callback={handleSendNotification} notif={notif}/>
         </View>
       </Card>
     </BlurView>
