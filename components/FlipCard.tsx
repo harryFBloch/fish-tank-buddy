@@ -98,7 +98,6 @@ const styles = StyleSheet.create({
   },
   test: {
     backgroundColor: 'blue',
-    padding: 16,
     zIndex: 1
   },
   glass: {

@@ -79,7 +79,7 @@ export const Home = (): ReactElement => {
       <Animated.View style={{...styles.imageContainer, opacity: imageFade}}>
         <ImageBackground source={images[Number(index)]} style={styles.imageContainer}>
           <AdMobBannerComponent/>
-          <Animated.View style={{transform: [{translateY}], opacity, padding: 16}}>
+          <Animated.View style={{transform: [{translateY}], opacity, padding: 8}}>
             {Number(index) === 0 && <VolumeCalc />}
             {Number(index) === 1 && <ConversionCard />}
             {Number(index) === 2 && <NotificationsCard />}

@@ -73,6 +73,12 @@ export const AdMobInter = ({showInter, requestNonPersonalizedAdsOnly, closeInter
   useEffect(() => {
     if(showInter) {
       interAd?.show()
+      .then(() => {
+        console.log('ADMOB inter shown then')
+      })
+      .catch((error) => {
+        console.log('ADMOB inter shown catch', {error})
+      })
     }
   }, [showInter])
 

@@ -15,13 +15,28 @@ export type TankShapeType = {
 
 export type Results = {
   volume: number,
+  waterVolume: number,
   surfaceArea: number,
+  substrateAmount: number,
+  fishSizes: FishSizes
+}
 
+export type FishSizes = {
+  smallfish: {min: number, max: number},
+  mediumfish: {min: number, max: number},
+  largefish: {min: number, max: number},
 }
 
 export const ResultsTemplate: Results = {
   volume: 0,
   surfaceArea: 0,
+  substrateAmount: 0,
+  waterVolume: 0,
+  fishSizes: {
+    smallfish: {min: 0, max: 0},
+    mediumfish: {min: 0, max: 0},
+    largefish: {min: 0, max: 0},
+  }
 }
 
 export const TankShapes: TankShapesType = {
