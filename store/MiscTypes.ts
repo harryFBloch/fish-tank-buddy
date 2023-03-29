@@ -18,7 +18,8 @@ export type Results = {
   waterVolume: number,
   surfaceArea: number,
   substrateAmount: number,
-  fishSizes: FishSizes
+  fishSizes: FishSizes,
+  area: number,
 }
 
 export type FishSizes = {
@@ -32,6 +33,7 @@ export const ResultsTemplate: Results = {
   surfaceArea: 0,
   substrateAmount: 0,
   waterVolume: 0,
+  area: 0,
   fishSizes: {
     smallfish: {min: 0, max: 0},
     mediumfish: {min: 0, max: 0},

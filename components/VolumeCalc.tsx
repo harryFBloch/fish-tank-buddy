@@ -93,13 +93,13 @@ export const VolumeCalc = ({ showInter }: Props): ReactElement => {
       })
   }
 
-  const calculateMultiSideVolume = (): { volume: number, surfaceArea: number, waterVolume: number, fishSizes: FishSizes } => {
+  const calculateMultiSideVolume = (): { volume: number, surfaceArea: number, waterVolume: number, fishSizes: FishSizes, area: number } => {
     const baseArea = (sides * width * height) / 2;
     const lateralArea = sides * width * height;
     const surfaceArea = 2 * baseArea + lateralArea;
     const volume = baseArea * height;
     const waterVolume = baseArea * (height - (imperial ? 2 : 5));
-    return { volume, surfaceArea, waterVolume, fishSizes: calculateFishCount(volume)};
+    return { volume, surfaceArea, waterVolume, fishSizes: calculateFishCount(volume), area: baseArea};
   }
 
   function calculateSubstrateAmount(): number {
@@ -124,7 +124,7 @@ export const VolumeCalc = ({ showInter }: Props): ReactElement => {
     if (!imperial) {
       substrateAmount = volume / 1000; // 1 liter = 1000 cubic centimeters
     } else {
-      substrateAmount = volume
+      substrateAmount = volume / 231; // 1 Gallon = 231 cubic inches
     }
   
     // Round to 2 decimal places and return result
@@ -138,6 +138,7 @@ export const VolumeCalc = ({ showInter }: Props): ReactElement => {
         console.log(calculateFishCount(depth * width * height - (imperial ? 2 : 5)))
         return {
           fishSizes: calculateFishCount(depth * width * height - (imperial ? 2 : 5)),
+          area: depth * width,
           waterVolume: depth * width * height - (imperial ? 2 : 5),
           volume: depth * width * height, 
           surfaceArea: (2 * depth * width) + (2 *depth * height) + (2 * width * height),
@@ -148,6 +149,7 @@ export const VolumeCalc = ({ showInter }: Props): ReactElement => {
       case 1:
         return {
           waterVolume: Math.PI * Math.pow(diameter/2, 2) * (height - (imperial ? 2 : 5)),
+          area: Math.PI * Math.pow(diameter/2, 2),
           volume: Math.PI * Math.pow(diameter/2, 2) * height,
           surfaceArea: Math.pow(2 * Math.PI * (diameter/2), 2) + 2 * Math.PI * (diameter/2) * height,
           substrateAmount: depth * width * (imperial ? 2 : 5),
@@ -180,6 +182,32 @@ export const VolumeCalc = ({ showInter }: Props): ReactElement => {
     return fishAmount;
   }    
 
+  function kilogramsToPounds(kilograms: number): number {
+    return kilograms * 2.20462;
+  }
+  
+  function squareCmToSquareIn(squareCm: number): number {
+    return squareCm * 0.155;
+  }
+
+  function calculateWaterWeight(waterVol: number): number {
+    const density =  imperial ? 8.345 : 1; // 8.345 lb/gal and 1 kg/L are the densities of water
+    const weightInPounds = waterVol * density; // 2.20462 lb/kg is the conversion factor
+    const weightInKilos = waterVol * density;
+    return imperial ? +(weightInPounds).toFixed(2) : +(weightInKilos).toFixed(2);
+  }
+  
+
+  const calculateSubstrateWeight = (area: number): number  => {
+    let a = area;
+    if (!imperial) a = squareCmToSquareIn(a)
+    const b = (a / 10)
+    const kilograms = b / 2.2;
+    console.log({kilograms})
+    return imperial ? +(kilogramsToPounds(kilograms)).toFixed(2) : +(kilograms).toFixed(2);
+  }
+  
+
   const handleCalculateButton = () => {
     setResults({...calculateResults()});
     showInter()
@@ -188,11 +216,11 @@ export const VolumeCalc = ({ showInter }: Props): ReactElement => {
     })
   }
 
-  const convertResults = (): {volume: number, surfaceArea: number} => {
+  const convertResults = (): {volume: number, substrate: number, waterVolume: number} => {
     if(imperial) {
-      return {volume: +(results.volume/231).toFixed(2), surfaceArea: +(results.surfaceArea/1728).toFixed(2)}
+      return {volume: +(results.volume/231).toFixed(2), waterVolume: +(results.waterVolume/231).toFixed(2), substrate: +(results.substrateAmount/231).toFixed(2)}
     } else {
-      return {volume: +(results.volume/1000).toFixed(2), surfaceArea: +(results.surfaceArea).toFixed(2)}
+      return {volume: +(results.volume/1000).toFixed(2), waterVolume: +(results.waterVolume/1000).toFixed(2), substrate: +(results.substrateAmount/1000).toFixed(2)}
     }
   }
 
@@ -213,25 +241,39 @@ export const VolumeCalc = ({ showInter }: Props): ReactElement => {
         <Card.Title style={styles.whiteFont}>Here Are Your Results</Card.Title>
         <Card.Divider/>
         <View>
-          <Text style={styles.whiteFont}>Water Volume: {convertedResults.volume} {imperial ? 'Gallons' : "Liters"}</Text>
-          <Text style={styles.whiteFont}>Water Surface Area: {convertedResults.surfaceArea} {imperial ? 'Ft' + "\u00B2" : 'CM' + '\u00B2'}</Text>
-          <Text style={styles.whiteFont}>Gravel Volume: {calculateSubstrateAmount()} {imperial ? 'Gallons' : "Liters"}</Text>
+          <View style={styles.resultsContainer}>
+            <Text style={styles.whiteFont}>Total Tank Volume: </Text> 
+            <Text style={{...styles.whiteFont}}>{convertedResults.volume} {imperial ? 'Gallons' : "Liters"}</Text>
+          </View>
+          <View style={styles.resultsContainer}>
+            <Text style={styles.whiteFont}>Water Volume: </Text> 
+            <Text style={{...styles.whiteFont}}>{convertedResults.waterVolume} {imperial ? 'Gallons' : "Liters"}</Text>
+          </View>
+          <View style={styles.resultsContainer}>
+            <Text style={styles.whiteFont}>Water Weight: </Text> 
+            <Text style={{...styles.whiteFont}}>{calculateWaterWeight(convertedResults.waterVolume)} {imperial ? 'Pounds' : "Kilos"}</Text>
+          </View>
+          <View style={styles.resultsContainer}>
+            <Text style={styles.whiteFont}>Substrate Weight(2in):: </Text> 
+            <Text style={{...styles.whiteFont}}>{calculateSubstrateWeight(results.area)} {imperial ? 'Pounds' : "Kilos"}</Text>
+          </View>
           <View style={styles.fishSizeOuterContainer}>
             <View style={styles.fishSizeContainer}>
               <Text style={styles.fishSizeLabel}>Small 1cm-5cm</Text>
-              <Text style={styles.fishSizeResutlts}>min: {results.fishSizes.smallfish.max}, max: {results.fishSizes.smallfish.min}</Text>
+              <Text style={styles.fishSizeResutlts}>min: {results.fishSizes.smallfish.min}, max: {results.fishSizes.smallfish.max}</Text>
             </View>
             <View style={styles.fishSizeContainer}>
               <Text style={styles.fishSizeLabel}>Medium 5cm-10cm</Text>
-              <Text style={styles.fishSizeResutlts}>min: {results.fishSizes.mediumfish.max}, max: {results.fishSizes.mediumfish.min}</Text>
+              <Text style={styles.fishSizeResutlts}>min: {results.fishSizes.mediumfish.min}, max: {results.fishSizes.mediumfish.max}</Text>
             </View>
             <View style={styles.fishSizeContainer}>
               <Text style={styles.fishSizeLabel}>Large 10cm-15cm</Text>
-              <Text style={styles.fishSizeResutlts}>min: {results.fishSizes.largefish.max}, max: {results.fishSizes.largefish.min}</Text>
+              <Text style={styles.fishSizeResutlts}>min: {results.fishSizes.largefish.min}, max: {results.fishSizes.largefish.max}</Text>
             </View>
           </View>
         </View>
-        <Button style={styles.button} onPress={() => {
+        <Text style={styles.note}>"1 inch per 2 gallon" rule is just a general guideline and other factors such as the species of fish, their activity level, and the filtration and maintenance of the tank should also be considered when determining how many fish to keep in a tank.</Text>
+        <Button style={{...styles.button, ...styles.bottomMargin }} onPress={() => {
           resetInputs();
           setShowResults(false)
           setFlip(!flip)
@@ -273,7 +315,6 @@ export const VolumeCalc = ({ showInter }: Props): ReactElement => {
         {renderImperialSwitch()}
         <FloatingLabel value={height !== 0 ? String(height) : ""} label="Height" onChangeText={(e) => {setHeight(Number(e))}}/>
         <FloatingLabel value={diameter !== 0 ? String(diameter) : ""} label="Diameter" onChangeText={(e) => setDiameter(Number(e))}/>
-        <FloatingLabel value={depth !== 0 ? String(depth) : ""} label="Depth" onChangeText={(e) => setDepth(Number(e))}/>
         <Button style={styles.button} onPress={handleCalculateButton}>Calculate</Button>
       </View>
     )
@@ -349,6 +390,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 16,
+    marginBottom: 16,
   },
   switchContainer: {
     flexDirection: 'row',
@@ -389,6 +431,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-evenly',
+    marginBottom: 8,
+    marginTop: 8,
   },
   fishSizeLabel: {
     textAlign: 'center',
@@ -399,6 +443,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'white',
     fontSize: 12,
+  },
+  note: {
+    textAlign: 'center',
+    color: 'white',
+    fontSize: 10,
+  },
+  bottomMargin: {
+    marginBottom: 16,
+  },
+  resultsContainer: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 4,
   }
 
 });
