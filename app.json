@@ -18,7 +18,9 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you."
+        
       },
+      "buildNumber": "3",
       "bundleIdentifier": "com.hfb.fishTankBuddy"
     },
     "android": {

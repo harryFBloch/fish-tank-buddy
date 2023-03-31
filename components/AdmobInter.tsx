@@ -36,7 +36,9 @@ export const AdMobInter = ({showInter, requestNonPersonalizedAdsOnly, closeInter
 
   const [interAd, setInterAd] = useState<InterstitialAd>();
   const [loaded, setLoaded] = useState(false);
-  const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
+  const adUnitId = 'ca-app-pub-6336588907969710/9646030896';
+  // const adUnitId = TestIds.INTERSTITIAL;
+
 
   useEffect(() => {
     requestTrackingPermissionsAsync()
@@ -52,8 +54,10 @@ export const AdMobInter = ({showInter, requestNonPersonalizedAdsOnly, closeInter
   
       interstitial.addAdEventListener(AdEventType.ERROR, (error) => {
         console.log('Error ADMOB', {error})
-        closeInter();
-        callBack();
+        if(showInter){
+          closeInter();
+          callBack();
+        }
       })
   
       interstitial.addAdEventListener(AdEventType.CLOSED, () => {
@@ -71,7 +75,7 @@ export const AdMobInter = ({showInter, requestNonPersonalizedAdsOnly, closeInter
   },[])
 
   useEffect(() => {
-    if(showInter) {
+    if(showInter && loaded) {
       interAd?.show()
       .then(() => {
         console.log('ADMOB inter shown then')
@@ -79,8 +83,12 @@ export const AdMobInter = ({showInter, requestNonPersonalizedAdsOnly, closeInter
       .catch((error) => {
         console.log('ADMOB inter shown catch', {error})
       })
+    }else if (showInter && !loaded) {
+      closeInter();
+      callBack();
+
     }
-  }, [showInter])
+  }, [showInter, loaded])
 
   return (
     <></>

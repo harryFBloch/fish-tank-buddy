@@ -207,11 +207,14 @@ const styles = StyleSheet.create({
   },
   resultsContainer: {
     padding: 8,
+    marginBottom: 8,
   },
   resultsText: {
     fontWeight: 'bold',
     marginBottom: 4,
     fontSize: 18,
+    color: '#616B76',
+    textAlign: 'center',
   },
   glass: {
     backgroundColor: 'rgba(17, 25, 40, 0.35)',

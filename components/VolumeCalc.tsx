@@ -26,7 +26,6 @@ type Props = ReturnType<typeof mapDispatchToProps>
 
 export const VolumeCalc = ({ showInter }: Props): ReactElement => {
 
-  const [showResults, setShowResults] = useState(false)
   const [tabIndex, setTabIndex] = useState(0);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
@@ -45,6 +44,7 @@ export const VolumeCalc = ({ showInter }: Props): ReactElement => {
   const [unitLabelImperial, setUnitLabelImperial] = useState(true);
 
   const [flip, setFlip] = useState(false)
+
 
   const renderTankShape = (): ReactElement => {
     return (
@@ -132,10 +132,8 @@ export const VolumeCalc = ({ showInter }: Props): ReactElement => {
   }
 
   const calculateResults = (): Results => {
-    console.log({depth, width, height, sides, tabIndex}, 'calculateResults')
     switch (tabIndex){
       case 0:
-        console.log(calculateFishCount(depth * width * height - (imperial ? 2 : 5)))
         return {
           fishSizes: calculateFishCount(depth * width * height - (imperial ? 2 : 5)),
           area: depth * width,
@@ -203,7 +201,6 @@ export const VolumeCalc = ({ showInter }: Props): ReactElement => {
     if (!imperial) a = squareCmToSquareIn(a)
     const b = (a / 10)
     const kilograms = b / 2.2;
-    console.log({kilograms})
     return imperial ? +(kilogramsToPounds(kilograms)).toFixed(2) : +(kilograms).toFixed(2);
   }
   
@@ -229,9 +226,7 @@ export const VolumeCalc = ({ showInter }: Props): ReactElement => {
   }, [results])
 
   const handleInterCallBack = () => {
-    console.log({depth, width, height, sides, tabIndex}, 'handleInterCallBack')
     setFlip(!flip);
-    setShowResults(true);
   }
 
   const renderResultsCard = () =>{
@@ -275,7 +270,6 @@ export const VolumeCalc = ({ showInter }: Props): ReactElement => {
         <Text style={styles.note}>"1 inch per 2 gallon" rule is just a general guideline and other factors such as the species of fish, their activity level, and the filtration and maintenance of the tank should also be considered when determining how many fish to keep in a tank.</Text>
         <Button style={{...styles.button, ...styles.bottomMargin }} onPress={() => {
           resetInputs();
-          setShowResults(false)
           setFlip(!flip)
           }}>Back</Button>
       </Card>
@@ -370,7 +364,7 @@ export const VolumeCalc = ({ showInter }: Props): ReactElement => {
   return (
       <>
         <AdMobInter callBack={handleInterCallBack}/>
-        <FlipCard flip={flip} frontCard={<>{renderFrontCardHeader()}</>} backCard={showResults ? renderResultsCard() : <></>}/>
+        <FlipCard flip={flip} frontCard={<>{renderFrontCardHeader()}</>} backCard={renderResultsCard()}/>
       </>
   )
 }

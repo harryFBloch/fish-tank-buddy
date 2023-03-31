@@ -12,13 +12,18 @@ type InheritedProps = {
 const FlipCard = ({ frontCard, backCard, flip }: InheritedProps) => {
   const [animation, setAnimation] = useState(new Animated.Value(0));
 
+  const [lastValue, setLastValue] = useState(false);
+
   useEffect(() => {
-    Animated.timing(animation, {
-      toValue: flip ? 180 : 0,
-      duration: 1000,
-      useNativeDriver: false
-    }).start(); 
-  }, [flip]);
+    if (flip !== lastValue){
+      setLastValue(flip);
+      Animated.timing(animation, {
+        toValue: flip ? 180 : 0,
+        duration: 1000,
+        useNativeDriver: false
+      }).start(); 
+    }
+  }, [flip, lastValue]);
 
   const frontInterpolate = animation.interpolate({
     inputRange: [0, 180],
